@@ -24,14 +24,3 @@ Add the following to your terminal config file (ex : `~/.bashrc`):
 export OPENSSL_ROOT_DIR=/usr/include/openssl
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
 ```
-
-
-[Optional] OQS_PROVIDER Setup:
-```
-git clone https://github.com/open-quantum-safe/oqs-provider.git
-cd oqs-provider
-```
-Now, make sure you have OpenSSL (v >= 3.0) installed, and your specific branch of liboqs is built against that version, if not, then you may install it using the following script:
-```
-
-```
