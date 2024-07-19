@@ -137,5 +137,22 @@ openssl list -kem-algorithms -provider liboqsprovider #note I'm using the name l
 ![image](https://github.com/lakshya-chopra/openssl_installation/assets/77010972/9fcae985-243b-4c98-b055-a90f0622955c) <br/> <hr/>
 ![image](https://github.com/lakshya-chopra/openssl_installation/assets/77010972/70112cc1-f6a7-4bc7-874c-db66a8a1ef8e)
 
+## Create Post quantum certificates and CA authorities:
+We can make use of any signature algorithms [given here](https://github.com/open-quantum-safe/oqs-provider/blob/main/ALGORITHMS.md) for this task. I'm going to use **MLDSA87_x448**, which is a hybrid signature scheme consisting of **MLDSA87** (earlier known as Dilithium5) and **Ed448**. 
+
+Generating the CA certificate and CA key:
+```
+openssl req -x509 -new -newkey mldsa87_ed448 -keyout mldsa87_ed448_CA.key -out mldsa87_ed448_CA.crt -nodes -subj "/CN=test CA" -days 365 
+```
+![image](https://github.com/user-attachments/assets/9fabe65b-945a-49f7-a8ba-b897d5d05b1f)
+It's a really big key, roughly 1/4th part is shown here.
+
+Next, generate the server's key and send a CSR to the CA just created, approve the CSR and generate the cert:
+```
+openssl req -new -newkey mldsa87_ed448 -keyout mldsa87_ed448_srv.key -out mldsa87_ed448_srv.csr -nodes -subj "/CN=server"
+openssl x509 -req -in mldsa87_ed448_srv.csr -out mldsa87_ed448_srv.crt -CA mldsa87_ed448_CA.crt -CAkey mldsa87_ed448_CA.key -CAcreateserial -days 365
+```
+Hybrid PQC is used here, because in case if MLDSA turns out to be unsafe, then our keys and certs will still be as secure as "Ed448".
+
 
 
