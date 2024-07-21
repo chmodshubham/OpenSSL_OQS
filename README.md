@@ -23,11 +23,10 @@ sudo make install
 
 Add the following to your terminal config file (ex : `~/.bashrc`):
 ```sh
-export OPENSSL_ROOT_DIR=/usr/include/openssl
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib64 #or lib, depending on your config options
 export PATH=/usr/local/bin:$PATH
 
 export OPENSSL_CONF=/usr/local/ssl/openssl.cnf
 export OPENSSL_MODULES=~/openssl-3.0.14/
-export OPENSSL_APP=/usr/local/bin/openssl
+export OPENSSL_APP=/usr/local/bin/openssl #openssl bin path
 ```
