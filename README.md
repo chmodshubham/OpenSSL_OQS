@@ -24,9 +24,14 @@ sudo make install
 Add the following to your terminal config file (ex : `~/.bashrc`):
 ```sh
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib64 #or lib, depending on your config options
-export PATH=/usr/local/bin:$PATH
+export PATH=/usr/local/bin:$PATH #to set the default OpenSSL bin path
 
+# OPTIONAL
 export OPENSSL_CONF=/usr/local/ssl/openssl.cnf
-export OPENSSL_MODULES=~/openssl-3.0.14/
 export OPENSSL_APP=/usr/local/bin/openssl #openssl bin path
 ```
+Now, you may verify the path of the openssl binary executable:
+![image](https://github.com/user-attachments/assets/67240051-14bb-4a2e-aa43-51340d2fca63)
+
+[read more here regarding binary execs path](https://askubuntu.com/questions/1322134/how-do-i-change-an-existing-path-to-a-binary-so-that-it-points-to-a-newly-instal)
+[and here](https://superuser.com/questions/1474361/how-do-i-create-an-environment-variable-openssl)
