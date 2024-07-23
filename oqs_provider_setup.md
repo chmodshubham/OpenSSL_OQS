@@ -83,6 +83,9 @@ Here, we'll set up a complete quantum safe TLS/SSL dev environment, using OpenSS
 ### openssl.cnf
 ![image](https://github.com/lakshya-chopra/openssl_installation/assets/77010972/18be795b-c395-41e5-82c6-97c7c1448861)
 
+![Uploading image.png…]()
+
+
 You can also use the option while building the oqs-provider: ```-OQS_PROVIDER_BUILD_STATIC=ON```, to make a static library (.a) instead of a shared one (.so), for a static lib, the following code can be run:
 ```c
 #include <openssl/provider.h>
