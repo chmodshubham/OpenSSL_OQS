@@ -25,6 +25,7 @@ Add the following to your terminal config file (ex : `~/.bashrc`):
 ```sh
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib64 #or lib, depending on your config options
 export PATH=/usr/local/bin:$PATH #to set the default OpenSSL bin path
+export OPENSSL_ROOT_DIR=/home/ubuntu/openssl-3.0.14  #for CMake
 
 # OPTIONAL
 export OPENSSL_CONF=/usr/local/ssl/openssl.cnf
