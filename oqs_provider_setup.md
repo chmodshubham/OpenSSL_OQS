@@ -65,7 +65,7 @@ Here, we'll set up a complete quantum safe TLS/SSL dev environment, using OpenSS
   git clone https://github.com/open-quantum-safe/oqs-provider.git
   cd oqs-provider
   
-  liboqs_DIR=$BUILD_DIR cmake \
+  liboqs_DIR=$BUILD_DIR/lib/cmake \
     -DCMAKE_INSTALL_PREFIX=$WORKSPACE/oqs-provider \
     -DOPENSSL_ROOT_DIR=$BUILD_DIR \
     -DCMAKE_BUILD_TYPE=Release \
@@ -79,6 +79,8 @@ Here, we'll set up a complete quantum safe TLS/SSL dev environment, using OpenSS
   # Edit the openssl.cnf to add oqs-provider to the list of providers.
   sed -i "s/default = default_sect/default = default_sect\noqsprovider = oqsprovider_sect/g" $BUILD_DIR/ssl/openssl.cnf &&
   sed -i "s/\[default_sect\]/\[default_sect\]\nactivate = 1\n\[oqsprovider_sect\]\nactivate = 1\n/g" $BUILD_DIR/ssl/openssl.cnf
+
+  export OPENSSL_CONF=$BUILD_DIR/ssl/openssl.cnf
 ```
 ### openssl.cnf
 ![image](https://github.com/lakshya-chopra/openssl_installation/assets/77010972/18be795b-c395-41e5-82c6-97c7c1448861)
