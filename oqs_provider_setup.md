@@ -32,7 +32,7 @@ Here, we'll set up a complete quantum safe TLS/SSL dev environment, using OpenSS
   ./Configure \
     --prefix=$BUILD_DIR \
     no-ssl no-tls1 no-tls1_1 no-afalgeng \
-    no-shared threads -lm
+    no-shared threads -lm enable-sctp
   
   make -j
   make -j install_sw install_ssldirs
