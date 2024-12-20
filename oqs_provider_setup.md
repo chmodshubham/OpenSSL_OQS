@@ -58,6 +58,7 @@ Here, we'll set up a complete quantum safe TLS/SSL dev environment, using OpenSS
   make -j
   make -j install
   ```
+The option `DOQS_BUILD_ONLY_LIB=ON` can be turned `OFF` to add testing & prettyprint scripts. 
  ## Install oqs-provider:
   ```sh
   cd $WORKSPACE
@@ -67,7 +68,7 @@ Here, we'll set up a complete quantum safe TLS/SSL dev environment, using OpenSS
   
   liboqs_DIR=$BUILD_DIR/lib/cmake \
     -DCMAKE_INSTALL_PREFIX=$WORKSPACE/oqs-provider \
-    -DOPENSSL_ROOT_DIR=$BUILD_DIR \
+    -DOPENSSL_ROOT_DIR=$WORKSPACE/openssl \
     -DCMAKE_BUILD_TYPE=Release \
     -S . \
     -B _build
