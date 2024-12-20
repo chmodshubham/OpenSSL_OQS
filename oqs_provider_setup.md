@@ -32,7 +32,7 @@ Here, we'll set up a complete quantum safe TLS/SSL dev environment, using OpenSS
   ./Configure \
     --prefix=$BUILD_DIR \
     no-ssl no-tls1 no-tls1_1 no-afalgeng \
-    no-shared threads -lm enable-sctp
+    threads -lm enable-sctp
   
   make -j
   make -j install_sw install_ssldirs
@@ -81,14 +81,18 @@ The option `DOQS_BUILD_ONLY_LIB=ON` can be turned `OFF` to add testing & prettyp
   sed -i "s/default = default_sect/default = default_sect\noqsprovider = oqsprovider_sect/g" $BUILD_DIR/ssl/openssl.cnf &&
   sed -i "s/\[default_sect\]/\[default_sect\]\nactivate = 1\n\[oqsprovider_sect\]\nactivate = 1\n/g" $BUILD_DIR/ssl/openssl.cnf
 
-  export OPENSSL_CONF=$BUILD_DIR/ssl/openssl.cnf
 ```
 ### openssl.cnf
 ![image](https://github.com/lakshya-chopra/openssl_installation/assets/77010972/18be795b-c395-41e5-82c6-97c7c1448861)
 
 ![image](https://github.com/user-attachments/assets/5b0f1437-528d-4998-b4dc-b46db472f570)
 
-
+Next, make sure you add the new openssl conf and modules to your env variables (modules is the path to the dir where OpenSSL will find the oqs-provider):
+```sh
+# ENV
+export OPENSSL_CONF=$BUILD_DIR/ssl/openssl.cnf
+export OPENSSL_MODULES=$BUILD_DIR/lib
+```
 
 You can also use the option while building the oqs-provider: ```-OQS_PROVIDER_BUILD_STATIC=ON```, to make a static library (.a) instead of a shared one (.so), for a static lib, the following code can be run:
 ```c
@@ -122,18 +126,17 @@ for a dynamic lib instead, we make use of the `OSSL_PROVIDER_load` method, examp
         return -1;
     }
 ```
-Next, make sure you add the new openssl conf and modules to your env variables (modules is the path to the dir where OpenSSL will find the oqs-provider):
-```sh
-# ENV
-export OPENSSL_CONF=$BUILD_DIR/ssl/openssl.cnf
-export OPENSSL_MODULES=$BUILD_DIR/lib
-```
 
 At the end, your build dir structure should look like this:
 ![image](https://github.com/lakshya-chopra/openssl_installation/assets/77010972/88874c44-72f6-4379-8e8f-e0a0b2345b11)
 
 where, the `include` dir has the headers of OpenSSL, and liboqs & `bin` stores the actual executables (cli).
 
+## Run oqs-prov tests:
+```sh
+cd oqs-provider/scripts
+python3 test_tls_full.py --ossl=$BUILD_DIR/bin/openssl --ossl-config=$WORKSPACE/ssl/openssl.cnf --test-artifacts-dir=$WORKSPACE/oqs-provider/scripts/artifacts -n $nproc
+```
 
 ## Test the setup by running the below commands:
 ```sh
