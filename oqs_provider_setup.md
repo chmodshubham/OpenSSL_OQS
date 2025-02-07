@@ -11,9 +11,7 @@ Here, we'll set up a complete quantum safe TLS/SSL dev environment, using OpenSS
 
   # ENV
   export WORKSPACE=~/pqtls 
-  export BUILD_DIR=$WORKSPACE/build #will contain the build artifacts
-  
-  mkdir -p $BUILD_DIR/lib64
+  export BUILD_DIR=$WORKSPACE #will contain the build artifacts
   ```
 - ```sh
   sudo apt update
@@ -34,7 +32,8 @@ Here, we'll set up a complete quantum safe TLS/SSL dev environment, using OpenSS
     threads -lm enable-sctp
   
   make -j
-  sudo make -j install_sw install_ssldirs
+  #sudo make -j install_sw install_ssldirs
+  sudo make install -j
   ```
 
   ## Next up, we'll build liboqs against the OpenSSL version just installed:
