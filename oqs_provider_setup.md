@@ -9,9 +9,9 @@ Here, we'll set up a complete quantum safe TLS/SSL dev environment, using OpenSS
   mkdir pqtls
   cd pqtls
 
-  # ENV
   export WORKSPACE=~/pqtls 
-  export BUILD_DIR=$WORKSPACE #will contain the build artifacts
+  export BUILD_DIR=$WORKSPACE/build #will contain the build artifacts
+  mkdir -p $BUILD_DIR
   ```
 - ```sh
   sudo apt update
@@ -25,17 +25,23 @@ Here, we'll set up a complete quantum safe TLS/SSL dev environment, using OpenSS
   
   git clone https://github.com/openssl/openssl.git
   cd openssl
-  
+ 
   ./Configure \
-    --prefix=$BUILD_DIR \
-    no-ssl no-tls1 no-tls1_1 no-afalgeng \
-    threads -lm enable-sctp
+  --prefix=$BUILD_DIR \
+  --openssldir=$BUILD_DIR/ssl \
+  -Wl,-rpath,$BUILD_DIR/lib64 -Wl,--enable-new-dtags \
+  shared no-tls1 no-tls1_1 no-afalgeng \
+  threads -lm enable-sctp
   
+  # The no-afalgeng option disables the OpenSSL AF_ALG crypto engine.
+
   make -j
   #sudo make -j install_sw install_ssldirs
   sudo make install -j
   ```
-
+  [Note: On 64 bit systems, the library directory will default to `lib64`. For 32 bit systems & macOS, change lib64 to lib in the RPATH & subsequent environment variables]
+  Other installation options can be explored [here](https://github.com/openssl/openssl/blob/master/INSTALL.md)
+  
   ## Next up, we'll build liboqs against the OpenSSL version just installed:
   ```sh
   cd $WORKSPACE
@@ -73,7 +79,6 @@ The option `DOQS_BUILD_ONLY_LIB=ON` can be turned `OFF` to add testing & prettyp
   cmake --build _build
   
   # Copy the built lib to our standard workspace build dir
-  cp _build/lib/* $BUILD_DIR/lib/
   cp _build/lib/* $BUILD_DIR/lib64/ossl-modules
   
   # Edit the openssl.cnf to add oqs-provider to the list of providers.
@@ -81,15 +86,16 @@ The option `DOQS_BUILD_ONLY_LIB=ON` can be turned `OFF` to add testing & prettyp
   sed -i "s/\[default_sect\]/\[default_sect\]\nactivate = 1\n\[oqsprovider_sect\]\nactivate = 1\n/g" $BUILD_DIR/ssl/openssl.cnf
 
 ```
+![image](https://github.com/user-attachments/assets/5b0f1437-528d-4998-b4dc-b46db472f570)
+
 ### openssl.cnf
 ![image](https://github.com/lakshya-chopra/openssl_installation/assets/77010972/18be795b-c395-41e5-82c6-97c7c1448861)
 
-![image](https://github.com/user-attachments/assets/5b0f1437-528d-4998-b4dc-b46db472f570)
 
 - Next, make sure you add the new openssl conf and modules to your env variables (modules is the path to the dir where OpenSSL will find the oqs-provider):
 ```sh
 export OPENSSL_CONF=$BUILD_DIR/ssl/openssl.cnf
-export OPENSSL_MODULES=$BUILD_DIR/lib
+export OPENSSL_MODULES=$BUILD_DIR/lib64/ossl-modules
 ```
 
 - At the end, your build dir structure should look like this:
@@ -117,9 +123,9 @@ void load_oqs_provider(OSSL_LIB_CTX *libctx) {
   }
 }
 ```
-Set the `LD_LIBRARY_PATH`:  ```export LD_LIBRARY_PATH=/home/ubuntu/quantumsafe/build/lib:$LD_LIBRARY_PATH``` 
+Set the `LD_LIBRARY_PATH`:  ```export LD_LIBRARY_PATH=$BUILD_DIR/lib:$BUILD_DIR/lib64:$LD_LIBRARY_PATH``` 
 
-and then run using ```gcc -o main main.c -I/home/ubuntu/quantumsafe/build/include/openssl -I/home/ubuntu/quantumsafe/oqs-provider/oqsprov -L/home/ubuntu/quantumsafe/build/lib -L/home/ubuntu/quantumsafe/build/lib64 -lssl -lcrypto -loqs``` (Note -L befor -l, so that the Gnu Linker only searches the paths we have specified)
+and then run using ```gcc -o main main.c -I$BUILD_DIR/include/openssl -I$WORKSPACE/oqs-provider/oqsprov -L$BUILD_DIR/lib -L$BUILD_DIR/lib64 -lssl -lcrypto -loqs``` (Note -L befor -l, so that the Gnu Linker only searches the paths we have specified)
 
 - for a dynamic lib instead, we make use of the `OSSL_PROVIDER_load` method, example:
 ```c
@@ -136,7 +142,7 @@ and then run using ```gcc -o main main.c -I/home/ubuntu/quantumsafe/build/includ
 cd oqs-provider/scripts
 python3 test_tls_full.py --ossl=$BUILD_DIR/bin/openssl --ossl-config=$BUILD_DIR/ssl/openssl.cnf --test-artifacts-dir=$WORKSPACE/oqs-provider/scripts/artifacts -n $nproc
 ```
-- For running the tests below, certain environment variables need to be set:
+- For running the tests below, certain environment variables need to be set: (Check [oqsprovider/scripts/fullbuild.sh](https://github.com/open-quantum-safe/oqs-provider/blob/main/scripts/fullbuild.sh))
   - `OPENSSL_INSTALL` - directory where OpenSSL is installed, script `fullbuild.sh` will automatically locate the `OPENSSL_APP` via that (though we can set that manually too)
   - `OPENSSL_BRANCH`
   - `liboqs_DIR`
