@@ -52,6 +52,7 @@ mkdir -p $BUILD_DIR
 
 cd $WORKSPACE
 git clone https://github.com/openssl/openssl.git
+git checkout 98acb6b 
 cd openssl
 
 ./Configure \
